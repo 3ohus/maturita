@@ -1,0 +1,22 @@
+[
+  {
+    "Number": 2,
+    "Name": "TEST",
+    "Category": "Ru\u010Dn\u00ED n\u00E1\u0159ad\u00ED",
+    "Quantity": 33,
+    "Unit": "M",
+    "Placement": "Sklad 2",
+    "Minimum": 2,
+    "Price": 1345
+  },
+  {
+    "Number": 3,
+    "Name": "vbgvfcd",
+    "Category": "Jisti\u010De",
+    "Quantity": 1,
+    "Unit": "M",
+    "Placement": "Sklad 1",
+    "Minimum": 2,
+    "Price": 233
+  }
+]

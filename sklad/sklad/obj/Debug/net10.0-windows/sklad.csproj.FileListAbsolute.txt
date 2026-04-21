@@ -1,0 +1,17 @@
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.Form1.resources
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.FormularPolozky.resources
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.csproj.GenerateResource.cache
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.AssemblyInfoInputs.cache
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.AssemblyInfo.cs
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.csproj.CoreCompileInputs.cache
+C:\Users\janst\source\repos\sklad\sklad\bin\Debug\net10.0-windows\sklad.exe
+C:\Users\janst\source\repos\sklad\sklad\bin\Debug\net10.0-windows\sklad.deps.json
+C:\Users\janst\source\repos\sklad\sklad\bin\Debug\net10.0-windows\sklad.runtimeconfig.json
+C:\Users\janst\source\repos\sklad\sklad\bin\Debug\net10.0-windows\sklad.dll
+C:\Users\janst\source\repos\sklad\sklad\bin\Debug\net10.0-windows\sklad.pdb
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.dll
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\refint\sklad.dll
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.pdb
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\sklad.genruntimeconfig.cache
+C:\Users\janst\source\repos\sklad\sklad\obj\Debug\net10.0-windows\ref\sklad.dll
