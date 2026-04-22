@@ -10,13 +10,9 @@ namespace sklad
 {
     public partial class FormularPolozky : Form
     {
-        // Veřejná vlastnost, kterou si hlavní formulář přečte po zavření tohoto okna
         public CPolozka AktualniPolozka { get; private set; }
-
-        // Pomocná proměnná pro uložení reference, pokud okno otevíráme v režimu editace
         private CPolozka _editovanaPolozka = null;
 
-        // Konstruktor pro PŘIDÁVÁNÍ nové položky
         public FormularPolozky()
         {
             InitializeComponent();
@@ -24,15 +20,12 @@ namespace sklad
             button1.Text = "Přidat";
         }
 
-        // Konstruktor pro EDITACI existující položky
-        // polozka je Objekt položky, která se má upravit
         public FormularPolozky(CPolozka polozka) : this()
         {
             _editovanaPolozka = polozka;
             this.Text = "Upravit položku";
             button1.Text = "Uložit změny";
 
-            // Naplnění ovládacích prvků daty z objektu
             textBox1.Text = polozka.Number.ToString();
             textBox2.Text = polozka.Name;
             comboBox1.Text = polozka.Category;
@@ -40,15 +33,11 @@ namespace sklad
             comboBox2.Text = polozka.Unit;
             comboBox3.Text = polozka.Placement;
             textBox4.Text = polozka.Minimum.ToString();
-
-            // Cena se vypisuje s tečkou (InvariantCulture), aby se s ní lépe pracovalo při ukládání
             textBox5.Text = polozka.Price.ToString(CultureInfo.InvariantCulture);
 
-            // Při editaci zakážeme změnu ID (Číslo zboží), aby se nerozbily vazby v JSONu
             textBox1.Enabled = false;
         }
 
-        // Tlačítko OK (Uložit/Přidat)
         private void button1_Click(object sender, EventArgs e)
         {
             if (ZkontrolujData())
@@ -59,60 +48,86 @@ namespace sklad
             }
         }
 
-        // Tlačítko Storno
         private void button2_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
 
-        // Validace vstupů: kontroluje prázdná pole, formát čísel a záporné hodnoty
         public bool ZkontrolujData()
         {
-            // kontrola prázdných polí a záporných čísel
+            // 1. Kontrola prázdných polí
             var textboxes = new[] { textBox1, textBox2, textBox3, textBox4, textBox5 };
             if (textboxes.Any(tb => string.IsNullOrWhiteSpace(tb.Text)))
             {
-                MessageBox.Show("Vyplňte vše!");
+                MessageBox.Show("Všechna pole musí být vyplněna!", "Chyba validace", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            // kontrola že číslo zboží je kladné a že se nejedná o duplicitní ID (při přidávání)
-
- 
-            if (int.TryParse(textBox1.Text, out int zadaneCislo))
+            // 2. Validace číselných formátů (TryParse)
+            // Používáme dočasné proměnné, abychom ověřili, že parsování projde
+            if (!int.TryParse(textBox1.Text, out int n) || n < 0)
             {
+                MessageBox.Show("Číslo zboží musí být celé kladné číslo!", "Chyba formátu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
 
-                string path = System.IO.Path.Combine(Application.StartupPath, "data.json");
+            if (!int.TryParse(textBox3.Text, out int q) || q < 0)
+            {
+                MessageBox.Show("Množství musí být celé nezáporné číslo!", "Chyba formátu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
 
-                if (System.IO.File.Exists(path))
+            if (!int.TryParse(textBox4.Text, out int m) || m < 0)
+            {
+                MessageBox.Show("Minimální zásoba musí být celé nezáporné číslo!", "Chyba formátu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            // U ceny sjednotíme oddělovač před kontrolou
+            string cenaText = textBox5.Text.Trim().Replace(',', '.');
+            if (!float.TryParse(cenaText, NumberStyles.Any, CultureInfo.InvariantCulture, out float p) || p < 0)
+            {
+                MessageBox.Show("Cena musí být platné kladné číslo!", "Chyba formátu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            // 3. Kontrola duplicity ID (pouze při přidávání nové položky)
+            if (_editovanaPolozka == null)
+            {
+                int zadaneCislo = int.Parse(textBox1.Text); // Tady už víme, že to projde
+                string path = Path.Combine(Application.StartupPath, "data.json");
+
+                if (File.Exists(path))
                 {
-                    string json = System.IO.File.ReadAllText(path);
-                    var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    var seznam = System.Text.Json.JsonSerializer.Deserialize<List<CPolozka>>(json, options) ?? new List<CPolozka>();
-
-
-                    if (_editovanaPolozka == null)
+                    try
                     {
-                        if (seznam.Any(p => p.Number == zadaneCislo))
+                        string json = File.ReadAllText(path);
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        var seznam = JsonSerializer.Deserialize<List<CPolozka>>(json, options) ?? new List<CPolozka>();
+
+                        if (seznam.Any(pol => pol.Number == zadaneCislo))
                         {
-                            MessageBox.Show($"Zboží s číslem {zadaneCislo} už na skladě existuje! Zvolte jiné.", "Duplicitní ID", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show($"Zboží s číslem {zadaneCislo} už na skladě existuje!", "Duplicitní ID", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return false;
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Pokud je JSON poškozený, raději upozorníme, ale nezablokujeme vše
+                        MessageBox.Show("Chyba při kontrole databáze: " + ex.Message);
                     }
                 }
             }
 
-
             return true;
         }
 
-        // Přetvoří data zpět do objektu CPolozka
         private void PripravData()
         {
-            // Pokud editujeme, upravíme původní objekt. Pokud ne, vytvoříme nový.
             AktualniPolozka = _editovanaPolozka ?? new CPolozka();
 
+            // Jelikož ZkontrolujData() prošlo, můžeme bezpečně parsovat
             AktualniPolozka.Number = int.Parse(textBox1.Text.Trim());
             AktualniPolozka.Name = textBox2.Text.Trim();
             AktualniPolozka.Category = comboBox1.Text.Trim();
@@ -121,8 +136,6 @@ namespace sklad
             AktualniPolozka.Placement = comboBox3.Text.Trim();
             AktualniPolozka.Minimum = int.Parse(textBox4.Text.Trim());
 
-            // Ošetření ceny: sjednotíme čárky na tečky a parsujeme nečeským formátem (InvariantCulture)
-            // Tím zajistíme, že se data uloží vždy správně.
             string finalniCenaText = textBox5.Text.Trim().Replace(',', '.');
             AktualniPolozka.Price = float.Parse(finalniCenaText, CultureInfo.InvariantCulture);
         }
